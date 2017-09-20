@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<package>
+  <name>yumi_demos</name>
+  <version>0.1.0</version>
+  <description>YuMi test controllers</description>
+
+
+  <maintainer email="yoshua@kth.se">Yoshua Nava</maintainer>
+
+  <license>BSD</license>
+
+  <author>Yoshua Nava</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  
+  <build_depend>moveit_msgs</build_depend>
+  <build_depend>rospy</build_depend>
+  <build_depend>yumi_hw</build_depend>
+  <build_depend>moveit_core</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>moveit_ros_planning</build_depend>
+  <run_depend>moveit_msgs</run_depend>
+  <run_depend>moveit_core</run_depend>
+  <run_depend>moveit_ros_planning</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>yumi_hw</run_depend>
+  <run_depend>rospy</run_depend>
+
+</package>

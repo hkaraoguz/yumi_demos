@@ -39,7 +39,7 @@ def init_Moveit():
     :rtype: None
     """
 
-    rospy.init_node('yumi_moveit_demo')
+    #rospy.init_node('yumi_moveit_demo')
 
     global group_l
     global group_r
@@ -76,14 +76,14 @@ def init_Moveit():
     group_l = moveit_commander.MoveGroupCommander("left_arm")
     group_l.set_planner_id("ESTkConfigDefault")
     group_l.allow_replanning(False)
-    group_l.set_goal_position_tolerance(0.00005)
+    group_l.set_goal_position_tolerance(0.0005)
     group_l.set_goal_orientation_tolerance(0.005)
 
     group_r = moveit_commander.MoveGroupCommander("right_arm")
     group_r.set_planner_id("ESTkConfigDefault")
     group_r.allow_replanning(False)
-    group_r.set_goal_position_tolerance(0.00005)
-    group_r.set_goal_orientation_tolerance(0.0005)
+    group_r.set_goal_position_tolerance(0.0005)
+    group_r.set_goal_orientation_tolerance(0.005)
 
     group_both = moveit_commander.MoveGroupCommander("both_arms")
     group_both.set_planner_id("ESTkConfigDefault")
@@ -95,7 +95,7 @@ def init_Moveit():
     rospy.sleep(3)
     print("####################################     Finished Initialization     ####################################")
 
-    sys.stdout.write('\nYuMi MoveIt! demo initialized!\n\n\n')
+    #sys.stdout.write('\nYuMi MoveIt! demo initialized!\n\n\n')
 
 
 
@@ -417,7 +417,7 @@ def plan_path(points, arm, planning_tries = 500):
 
 
 #Plan a cartesian path through the given waypoints and execute
-def traverse_path(points, arm, planning_tries = 500):
+def traverse_path(points, arm, planning_tries = 10):
     """Commands an end-effector to traverse a path
 
     Creates a path between the given waypoints, interpolating points spaced
@@ -475,6 +475,8 @@ def plan_and_move(move_group, target):
                                         '}. Rotation: {' + str(euler[0]) + ';' + str(euler[1]) + ';' + str(euler[2]) + '}.')
     move_group.set_pose_target(target)
     plan = move_group.plan()
+
+    #print "Plan ",len(plan.joint_trajectory.points)
     move_group.go(wait=True)
     rospy.sleep(3)
 
@@ -497,7 +499,11 @@ def reset_arm(arm):
     safeJointPositionR = [-1.6866122484207153, 0.3893221914768219, 0.4243301749229431, 0.41235706210136414, -0.3982231914997101, -0.3880411684513092, 3.123624086380005]
     safeJointPositionL = [-1.46564781665802, 0.3302380442619324, 2.507143497467041, 0.7764986753463745, -2.852548837661743, 1.659092664718628, 1.378138542175293]
     safeJointPositionL = [-1.291207194328308, -0.5257109999656677, 2.6792538166046143, 0.6144749522209167, -2.475924015045166, 0.5748416185379028, 0.28773728013038635]
-    safeJointPositionL = [-1.0363517999649048, -0.6142887473106384, 2.595912456512451, 0.2907666862010956, -1.4505174160003662, 0.3214145600795746, -0.5671616792678833]
+    
+    safeJointPositionL =[-0.4478764533996582, -1.2682621479034424, 1.9585838317871094, 0.4285459518432617, 0.985352098941803, -0.024183640256524086, -0.5602127313613892]
+    safeJointPositionR = [0.5301980376243591, -1.8081225156784058, -1.3030146360397339, 0.3174477219581604, -2.0786147117614746, 0.8679736256599426, 3.358731985092163]
+    #safeJointPositionL = [-1.0363517999649048, -0.6142887473106384, 2.595912456512451, 0.2907666862010956, -1.4505174160003662, 0.3214145600795746, -0.5671616792678833]
+    #safeJointPositionL =[-0.25472718477249146, -1.5131276845932007, 0.5196816325187683, -4.367737293243408, 0.3309118151664734, 3.188214063644409, 1.7447172403335571]
     global group_l
     global group_r
     global group_both

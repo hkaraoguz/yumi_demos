@@ -48,7 +48,7 @@ def init_Moveit():
     global scene
     print("####################################     Start Initialization     ####################################")
     moveit_commander.roscpp_initialize(sys.argv)
-    
+
     robot = moveit_commander.RobotCommander()
     scene = moveit_commander.PlanningSceneInterface()
     rospy.sleep(1)
@@ -291,7 +291,7 @@ def gripper_effort(gripper_id, effort):
     """
     rospy.loginfo("Setting gripper " + str(gripper_id) + " to " + str(effort))
     rospy.loginfo('Setting gripper effort to ' + str(effort) + ' for arm ' + str(gripper_id))
-    
+
     if (gripper_id == RIGHT):
         pubname = '/yumi/gripper_r_effort_cmd'
 
@@ -403,13 +403,13 @@ def plan_path(points, arm, planning_tries = 500):
         attempts += 1
         rospy.loginfo('attempts: ' + str(attempts) + ', fraction: ' + str(fraction))
         if (fraction == 1.0):
-            plan = cur_arm.retime_trajectory(robot.get_current_state(), plan, 1.0)
+            plan = cur_arm.retime_trajectory(robot.get_current_state(), plan, 0.5)
             return plan
             #r = cur_arm.execute(plan)
 
     if (fraction < 1.0):
         rospy.logerr('Only managed to calculate ' + str(fraction*100) + '% of the path!')
-        raise Exception('Could not calculate full path, exiting')
+        #raise Exception('Could not calculate full path, exiting')
 
     return None
 
@@ -439,11 +439,15 @@ def traverse_path(points, arm, planning_tries = 10):
 
     if (arm != BOTH):
         plan = plan_path(points, arm, planning_tries)
-        if (plan != None):
+        if (plan and len(plan.joint_trajectory.points) != 0):
             if(arm == RIGHT):
                 group_r.execute(plan)
             else:
                 group_l.execute(plan)
+            return True
+        else:
+            rospy.logwarn("No valid plan has been found")
+            return False
     else:
         traverse_pathDual(points, planning_tries)
 
@@ -499,7 +503,7 @@ def reset_arm(arm):
     safeJointPositionR = [-1.6866122484207153, 0.3893221914768219, 0.4243301749229431, 0.41235706210136414, -0.3982231914997101, -0.3880411684513092, 3.123624086380005]
     safeJointPositionL = [-1.46564781665802, 0.3302380442619324, 2.507143497467041, 0.7764986753463745, -2.852548837661743, 1.659092664718628, 1.378138542175293]
     safeJointPositionL = [-1.291207194328308, -0.5257109999656677, 2.6792538166046143, 0.6144749522209167, -2.475924015045166, 0.5748416185379028, 0.28773728013038635]
-    
+
     safeJointPositionL =[-0.4478764533996582, -1.2682621479034424, 1.9585838317871094, 0.4285459518432617, 0.985352098941803, -0.024183640256524086, -0.5602127313613892]
     safeJointPositionR = [0.5301980376243591, -1.8081225156784058, -1.3030146360397339, 0.3174477219581604, -2.0786147117614746, 0.8679736256599426, 3.358731985092163]
     #safeJointPositionL = [-1.0363517999649048, -0.6142887473106384, 2.595912456512451, 0.2907666862010956, -1.4505174160003662, 0.3214145600795746, -0.5671616792678833]

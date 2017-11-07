@@ -5,7 +5,7 @@ import sys
 import copy
 import rospy
 import moveit_commander
-import yumi_moveit_utils as yumi
+from yumi_demos import yumi_moveit_utils as yumi
 import moveit_msgs.msg
 import geometry_msgs.msg
 from std_srvs.srv import Empty
@@ -22,7 +22,7 @@ def close_grippers(arm):
     :rtype: None
     """
     yumi.gripper_effort(arm, 15.0)
-    # yumi.gripper_effort(arm, 0.0)
+    yumi.gripper_effort(arm, 0.0)
 
 
 def open_grippers(arm):

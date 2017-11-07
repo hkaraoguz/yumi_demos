@@ -3,10 +3,17 @@
 
 This package contains a set of scripts for controlling YuMi via MoveIt! Python interface
 
-For running them, bringup YuMi! (simulated or in real life), run the demo_online launch file from yumi_moveit_config, and execute the following command in a terminal:
-
+For running them, bringup YuMi:
 ```
-rosrun yumi_moveit_demos main.py 
+roslaunch yumi_traj_vel_control.launch
+```
+Then run the demo_online launch file from yumi_moveit_config:
+```
+roslaunch yumi_moveit_config demo_online.launch
+```
+and execute the following command in a terminal
+```
+rosrun yumi_moveit_demos main.py
 ```
 
 

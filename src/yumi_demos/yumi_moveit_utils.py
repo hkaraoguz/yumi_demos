@@ -47,7 +47,7 @@ def init_Moveit():
     global robot
     global scene
     print("####################################     Start Initialization     ####################################")
-    moveit_commander.roscpp_initialize(sys.argv)
+    #moveit_commander.roscpp_initialize(sys.argv)
 
     robot = moveit_commander.RobotCommander()
     scene = moveit_commander.PlanningSceneInterface()
@@ -60,6 +60,7 @@ def init_Moveit():
     # publish a demo scene
     p = PoseStamped()
     p.header.frame_id = robot.get_planning_frame()
+    print robot.get_planning_frame()
 
     # add a table
     # p.pose.position.x = 0.625
@@ -371,7 +372,30 @@ def go_to_joints(positions, arm):
 
 
 
-def plan_path(points, arm, planning_tries = 500):
+def plan_path_global(move_group, target):
+
+    pose = create_pose_euler(target[0], target[1], target[2], target[3], target[4],
+                           target[5])
+
+    #euler = tf.transformations.euler_from_quaternion((target.orientation.x, target.orientation.y, target.orientation.z, target.orientation.w))
+
+    if (move_group == group_l):
+        arm = 'left'
+    if (move_group == group_r):
+        arm = 'right'
+
+    #rospy.loginfo('Planning ' + arm + ' arm: Position: {' + str(target.position.x) + ';' + str(target.position.y) + ';' + str(target.position.z) +
+    #                                    '}. Rotation: {' + str(euler[0]) + ';' + str(euler[1]) + ';' + str(euler[2]) + '}.')
+    move_group.set_pose_target(pose)
+    plan = move_group.plan()
+
+    return plan
+
+
+
+
+def plan_path_local(points, arm, planning_tries = 10):
+
     global robot
     global group_l
     global group_r
@@ -402,8 +426,9 @@ def plan_path(points, arm, planning_tries = 500):
         (plan, fraction) = cur_arm.compute_cartesian_path(waypoints, 0.01, 0.0, True)
         attempts += 1
         rospy.loginfo('attempts: ' + str(attempts) + ', fraction: ' + str(fraction))
+
         if (fraction == 1.0):
-            plan = cur_arm.retime_trajectory(robot.get_current_state(), plan, 0.5)
+            plan = cur_arm.retime_trajectory(robot.get_current_state(), plan, 1.0)
             return plan
             #r = cur_arm.execute(plan)
 
@@ -422,7 +447,7 @@ def traverse_path(points, arm, planning_tries = 10):
 
     Creates a path between the given waypoints, interpolating points spaced
     by 1cm. Then tries to plan a trajectory through those points, until it
-    succeeds and executes or if it fails to find a path for 500 tries it throws
+    succeeds and executes or if it fails to find a path for 10 tries it throws
     an exception.
 
     :param points: An array of waypoints which are themselves array of the form [x,y,z,r,p,y]
@@ -438,7 +463,7 @@ def traverse_path(points, arm, planning_tries = 10):
     global group_r
 
     if (arm != BOTH):
-        plan = plan_path(points, arm, planning_tries)
+        plan = plan_path_local(points, arm, planning_tries)
         if (plan and len(plan.joint_trajectory.points) != 0):
             if(arm == RIGHT):
                 group_r.execute(plan)
@@ -468,6 +493,7 @@ def plan_and_move(move_group, target):
     :returns: Nothing
     :rtype: None
     """
+
     euler = tf.transformations.euler_from_quaternion((target.orientation.x, target.orientation.y, target.orientation.z, target.orientation.w))
 
     if (move_group == group_l):
@@ -482,7 +508,7 @@ def plan_and_move(move_group, target):
 
     #print "Plan ",len(plan.joint_trajectory.points)
     move_group.go(wait=True)
-    rospy.sleep(3)
+    rospy.sleep(1)
 
 
 

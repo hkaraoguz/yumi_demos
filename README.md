@@ -1,20 +1,23 @@
 # yumi_moveit_demos
 
 
-This package contains a set of scripts for controlling YuMi via MoveIt! Python interface
+This package acts as an interface package for controlling YuMi via MoveIt! Python interface
 
-For running them, bringup YuMi:
+For testing this package on an actual Yumi:
+
+Bringup YuMi:
 ```
-roslaunch yumi_traj_vel_control.launch
+roslaunch yumi_launch yumi_traj_vel_control.launch
 ```
-Then run the demo_online launch file from yumi_moveit_config:
+Run the demo_online:
 ```
 roslaunch yumi_moveit_config demo_online.launch
 ```
-and execute the following command in a terminal
+Execute the following command in a terminal
 ```
-rosrun yumi_moveit_demos main.py
+rosrun yumi_moveit_demos main.py --planning_frame "move_it_planning_frame"
 ```
+where `planning_frame` parameter defines the planning frame for MoveIt!. The default value is `/world`.
 
 
 ## Credits

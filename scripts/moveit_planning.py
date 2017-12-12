@@ -79,7 +79,10 @@ def plan_pickplace(goal):
     pose_ee_t[2] = 0.2
     pose_ee_t[5] = goal.orientation.z#-3.14159
 
-    plan = yumi.plan_path_local([pose_ee_t],hand_id)
+
+    current_robot_state = yumi.CurrentRobotState(plan.joint_trajectory.joint_names,plan.joint_trajectory.points[-1].positions)
+
+    plan = yumi.plan_path_local([pose_ee_t],hand_id,current_robot_state)
 
     if(plan and len(plan.joint_trajectory.points) != 0 ):
         plans.append(plan)
@@ -89,7 +92,8 @@ def plan_pickplace(goal):
     ''' Go up again '''
     pose_ee_t[2] = 0.4
 
-    plan = yumi.plan_path_local([pose_ee_t],hand_id)
+    current_robot_state.joint_positions = plan.joint_trajectory.points[-1].positions
+    plan = yumi.plan_path_local([pose_ee_t],hand_id,current_robot_state)
 
     if(plan and len(plan.joint_trajectory.points) != 0 ):
         plans.append(plan)
@@ -99,7 +103,8 @@ def plan_pickplace(goal):
 
     if hand_id == yumi.LEFT:
         pose_ee = [0.1, 0.4, 0.3, 0.0, -2.0, 0.0]
-        plan = yumi.plan_path_local([pose_ee],hand_id)
+        current_robot_state.joint_positions = plan.joint_trajectory.points[-1].positions
+        plan = yumi.plan_path_local([pose_ee],hand_id,current_robot_state)
 
         if(plan and len(plan.joint_trajectory.points) != 0 ):
             plans.append(plan)
@@ -108,7 +113,8 @@ def plan_pickplace(goal):
 
     else:
         pose_ee = [0.1, -0.4, 0.3, 0.0, -2.0, 0.0]
-        plan = yumi.plan_path_local([pose_ee],hand_id)
+        current_robot_state.joint_positions = plan.joint_trajectory.points[-1].positions
+        plan = yumi.plan_path_local([pose_ee],hand_id,current_robot_state)
 
         if(plan and len(plan.joint_trajectory.points) != 0 ):
             plans.append(plan)

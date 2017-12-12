@@ -25,7 +25,11 @@ global group_both #:The move group for using both arms at once
 global robot    #:The RobotCommander() from MoveIt!
 global scene    #:The PlanningSceneInterface from MoveIt!
 
+class CurrentRobotState():
 
+    def __init__(self, joint_names, joint_positions):
+        self.joint_names = joint_names
+        self.joint_positions = joint_positions
 
 
 #Initializes the package to interface with MoveIt!
@@ -394,7 +398,7 @@ def plan_path_global(move_group, target):
 
 
 
-def plan_path_local(points, arm, planning_tries = 10):
+def plan_path_local(points, arm, current_joint_state = None, planning_tries = 10):
 
     global robot
     global group_l
@@ -417,7 +421,16 @@ def plan_path_local(points, arm, planning_tries = 10):
         waypoints.append(copy.deepcopy(wpose))
     #print waypoints
 
-    cur_arm.set_start_state_to_current_state()
+    if current_joint_state == None:
+        cur_arm.set_start_state_to_current_state()
+    else:
+        robot_state = RobotState()
+        joint_state = JointState()
+        joint_state.header.stamp = rospy.Time.now()
+        joint_state.name = current_joint_state.joint_names
+        joint_state.position = current_joint_state.joint_positions
+        robot_state.joint_state = joint_state
+        cur_arm.set_start_state(robot_state)
 
     attempts = 0
     fraction = 0.0
@@ -463,7 +476,7 @@ def traverse_path(points, arm, planning_tries = 10):
     global group_r
 
     if (arm != BOTH):
-        plan = plan_path_local(points, arm, planning_tries)
+        plan = plan_path_local(points, arm, None,planning_tries)
         if (plan and len(plan.joint_trajectory.points) != 0):
             if(arm == RIGHT):
                 group_r.execute(plan)

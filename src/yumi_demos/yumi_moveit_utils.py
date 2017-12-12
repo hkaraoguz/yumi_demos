@@ -33,7 +33,7 @@ class CurrentRobotState():
 
 
 #Initializes the package to interface with MoveIt!
-def init_Moveit():
+def init_Moveit(planning_frame="/world"):
     """Initializes the connection to MoveIt!
 
     Initializes all the objects related to MoveIt! functions. Also adds in the
@@ -64,7 +64,8 @@ def init_Moveit():
     # publish a demo scene
     p = PoseStamped()
     p.header.frame_id = robot.get_planning_frame()
-    print robot.get_planning_frame()
+    if(robot.get_planning_frame() != planning_frame):
+        raise AssertionError("Planning frames do not match!!", robot.get_planning_frame(),planning_frame)
 
     # add a table
     # p.pose.position.x = 0.625
@@ -93,14 +94,77 @@ def init_Moveit():
     group_both = moveit_commander.MoveGroupCommander("both_arms")
     group_both.set_planner_id("ESTkConfigDefault")
     group_both.allow_replanning(False)
-    group_both.set_goal_position_tolerance(0.00005)
-    group_both.set_goal_orientation_tolerance(0.0005)
+    group_both.set_goal_position_tolerance(0.0005)
+    group_both.set_goal_orientation_tolerance(0.005)
 
-    display_trajectory_publisher = rospy.Publisher('/move_group/display_planned_path', 	moveit_msgs.msg.DisplayTrajectory, queue_size=20)
+    display_trajectory_publisher = rospy.Publisher('/move_group/display_planned_path', 	moveit_msgs.msg.DisplayTrajectory, queue_size=5)
     rospy.sleep(3)
     print("####################################     Finished Initialization     ####################################")
 
     #sys.stdout.write('\nYuMi MoveIt! demo initialized!\n\n\n')
+
+
+
+def move_global_planning(arm, pose_ee):
+
+    if (arm == LEFT):
+        plan_and_move(group_l, create_pose_euler(pose_ee[0], pose_ee[1], pose_ee[2], pose_ee[3], pose_ee[4],
+                                              pose_ee[5]))
+
+    elif (arm == RIGHT):
+        plan_and_move(group_r,create_pose_euler(pose_ee[0], pose_ee[1], pose_ee[2], pose_ee[3], pose_ee[4],
+                                                    pose_ee[5]))
+    else:
+        return False
+
+    return True
+
+
+
+
+def move_local_planning(arm, pose_ee):
+
+
+    if (arm == LEFT):
+        if not traverse_path([pose_ee], arm):
+            return False
+
+    elif (arm == RIGHT):
+        if not traverse_path([pose_ee], arm):
+            return False
+    else:
+        return False
+
+    return True
+
+
+
+
+
+def close_grippers(arm):
+    """Closes the grippers.
+
+    Closes the grippers with an effort of 15.
+
+    :param arm: The side to be closed (moveit_utils LEFT or RIGHT)
+    :type arm: int
+    :returns: Nothing
+    :rtype: None
+    """
+    gripper_effort(arm, 15.0)
+
+def open_grippers(arm):
+    """Opens the grippers.
+
+    Opens the grippers with an effort of -15 and then relaxes the effort to 0.
+
+    :param arm: The side to be opened (moveit_utils LEFT or RIGHT)
+    :type arm: int
+    :returns: Nothing
+    :rtype: None
+    """
+    gripper_effort(arm, -10.0)
+    gripper_effort(arm, 0.0)
 
 
 
@@ -385,9 +449,10 @@ def plan_path_global(move_group, target):
 
     if (move_group == group_l):
         arm = 'left'
-    if (move_group == group_r):
+    elif (move_group == group_r):
         arm = 'right'
-
+    else:
+        return None
     #rospy.loginfo('Planning ' + arm + ' arm: Position: {' + str(target.position.x) + ';' + str(target.position.y) + ';' + str(target.position.z) +
     #                                    '}. Rotation: {' + str(euler[0]) + ';' + str(euler[1]) + ';' + str(euler[2]) + '}.')
     move_group.set_pose_target(pose)
@@ -407,9 +472,11 @@ def plan_path_local(points, arm, current_joint_state = None, planning_tries = 10
     if (arm == LEFT):
         armname = 'left'
         cur_arm = group_l
-    if (arm == RIGHT):
+    elif (arm == RIGHT):
         armname = 'right'
         cur_arm = group_r
+    else:
+        return None
 
     rospy.loginfo('Moving ' + armname + ' through path: ')
     rospy.loginfo(points)
@@ -488,9 +555,6 @@ def traverse_path(points, arm, planning_tries = 10):
             return False
     else:
         traverse_pathDual(points, planning_tries)
-
-
-
 
 
 #Plan a trajectory and execute it

@@ -11,6 +11,7 @@ from moveit_msgs.msg import RobotTrajectory
 import geometry_msgs.msg
 from std_srvs.srv import Empty
 from yumi_demos.srv import *
+import argparse
 
 def plan_point(goal):
 
@@ -136,7 +137,19 @@ def planforaction_callback(req):
 
 if __name__ == '__main__':
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--planning_frame",type=str, default="/world",
+        help='Moveit planning frame')
+
+    args = parser.parse_args(rospy.myargv()[1:])
+
     rospy.init_node('yumi_moveit_planning')
-    yumi.init_Moveit()
+
+    try:
+        yumi.init_Moveit(args.planning_frame)
+    except Exception as ex:
+        rospy.logwarn("Moveit cannot be initialized!! %s",str(ex))
+        rospy.signal_shutdown("Moveit cannot be initialized!!")
+
     s = rospy.Service('yumi_plan_action', PlanforAction, planforaction_callback)
     rospy.spin()

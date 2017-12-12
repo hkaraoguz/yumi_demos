@@ -1,7 +1,7 @@
 # yumi_moveit_demos
 
 
-This package acts as an interface package for controlling YuMi via MoveIt! Python interface
+This package acts as an interface for controlling YuMi via MoveIt!
 
 For testing this package on an actual Yumi:
 

@@ -68,9 +68,9 @@ def run():
     :returns: Nothing
     :rtype: None
     """
-
+    rospy.init_node('moveit_yumi_resetpose')
     # Start by connecting to ROS and MoveIt!
-    yumi.init_Moveit()
+    yumi.init_Moveit("/yumi_pedestal")
 
     # Print current joint angles
     yumi.print_current_joint_states(yumi.RIGHT)

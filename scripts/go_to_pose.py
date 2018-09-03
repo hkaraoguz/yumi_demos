@@ -11,7 +11,7 @@ import geometry_msgs.msg
 from std_srvs.srv import Empty
 import argparse
 
-def run(planning_frame="/world"):
+def run(x,y,z,r,p,yaw,planning_frame="/world"):
 
     """Starts the node
 
@@ -37,19 +37,23 @@ def run(planning_frame="/world"):
     # Default pose
 
     # Right arm Target pose
-    pose_ee_r = [0.3, -0.3, 0.25, 0.0, 3.14, 0.0]
+    pose_ee_r = [x,y,z, r, p, yaw]
+
+    arm = yumi.LEFT
+    if y <= 0.0:
+        arm = yumi.RIGHT
 
     yumi.open_grippers(yumi.LEFT)
     yumi.open_grippers(yumi.RIGHT)
-    yumi.move_global_planning(yumi.RIGHT, pose_ee_r)
+    yumi.move_global_planning(arm, pose_ee_r)
     rospy.sleep(2.0)
-    pose_ee_r[2] = 0.2
-    yumi.move_global_planning(yumi.RIGHT, pose_ee_r)
+    #pose_ee_r[2] = 0.2
+    yumi.move_global_planning(arm, pose_ee_r)
     rospy.sleep(2.0)
-    pose_ee_r[2] = 0.25
-    yumi.move_global_planning(yumi.RIGHT, pose_ee_r)
+    #pose_ee_r[2] = 0.25
+    yumi.move_global_planning(arm, pose_ee_r)
     rospy.sleep(2.0)
-
+    '''
     pose_ee_l = [0.3, 0.3, 0.25, 0.0, 3.14, 0.0]
 
     yumi.move_global_planning(yumi.LEFT, pose_ee_l)
@@ -60,25 +64,43 @@ def run(planning_frame="/world"):
     pose_ee_l[2] = 0.25
     yumi.move_global_planning(yumi.LEFT, pose_ee_l)
     rospy.sleep(2.0)
-
+    '''
     # Reset YuMi joints to "home" position
-    yumi.reset_pose()
+    #yumi.reset_pose()
 
 
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--planning_frame",type=str, default="/yumi_pedestal",
+    parser.add_argument("planning_frame",type=str, default="/yumi_pedestal",
         help='Moveit planning frame')
+
+    parser.add_argument("x",type=float, default=0.3,
+        help='x coordinate')
+
+    parser.add_argument("y",type=float, default=0.3,
+        help='y coordinate')
+
+    parser.add_argument("z",type=float, default=0.3,
+        help='z coordinate')
+
+    parser.add_argument("r",type=float, default=0.0,
+        help='roll angle')
+
+    parser.add_argument("p",type=float, default=3.14,
+        help='pitch angle')
+
+    parser.add_argument("yaw",type=float, default=0.0,
+        help='yaw angle')
 
     args = parser.parse_args(rospy.myargv()[1:])
 
 
-    rospy.init_node('yumi_moveit_demo_test')
+    rospy.init_node('yumi_moveit_demo_goto_pose')
 
     try:
-        run(args.planning_frame)
+        run(args.x,args.y,args.z,args.r,args.p,args.yaw,args.planning_frame)
 
     	print "####################################     Program finished     ####################################"
     except rospy.ROSInterruptException:

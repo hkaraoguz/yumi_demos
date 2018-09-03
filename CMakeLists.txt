@@ -26,7 +26,7 @@ generate_messages(
 # Declare catkin package
 catkin_package(
   CATKIN_DEPENDS geometry_msgs std_msgs
-  LIBRARIES ${PROJECT_NAME}
+ # LIBRARIES ${PROJECT_NAME}
 )
 
 include_directories(include ${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})

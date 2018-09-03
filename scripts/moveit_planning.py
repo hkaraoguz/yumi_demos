@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-
-
 import sys
 import copy
 import rospy
@@ -13,7 +11,16 @@ from std_srvs.srv import Empty
 from yumi_demos.srv import *
 import argparse
 
+"""
+This script is for generating trajectory plans for an action
+using Moveit
+
+"""
+
 def plan_point(goal):
+    """
+    Function that generates the plans for the point action
+    """
 
     plans = []
 
@@ -25,9 +32,6 @@ def plan_point(goal):
     else:
         hand_id = yumi.RIGHT
         move_group = yumi.group_r
-
-
-    print hand_id
 
     if goal.position.z < 0.3:
         goal.position.z = 0.3
@@ -46,9 +50,10 @@ def plan_point(goal):
     return plans
 
 
-
-
 def plan_pickplace(goal):
+    """
+    Function that generates the plans for the pick_place action
+    """
 
     plans = []
 
@@ -61,13 +66,10 @@ def plan_pickplace(goal):
         hand_id = yumi.RIGHT
         move_group = yumi.group_r
 
-
-    print hand_id
-
     if goal.position.z < 0.3:
         goal.position.z = 0.3
 
-
+    """ Move the arm on top of the object """
     pose_ee_t = [goal.position.x, goal.position.y, goal.position.z, 0.0,3.14, 0.0]
 
     plan = yumi.plan_path_global(move_group,pose_ee_t)
@@ -76,11 +78,13 @@ def plan_pickplace(goal):
         plans.append(plan)
     else:
         return []
+    """"""
 
+    """ Move the arm down """
     pose_ee_t[2] = 0.2
     pose_ee_t[5] = goal.orientation.z#-3.14159
 
-
+    ## Get the robot state when the arm reaches to the previous waypoint
     current_robot_state = yumi.CurrentRobotState(plan.joint_trajectory.joint_names,plan.joint_trajectory.points[-1].positions)
 
     plan = yumi.plan_path_local([pose_ee_t],hand_id,current_robot_state)
@@ -89,9 +93,10 @@ def plan_pickplace(goal):
         plans.append(plan)
     else:
         return []
+    """"""
 
     ''' Go up again '''
-    pose_ee_t[2] = 0.4
+    pose_ee_t[2] = 0.3
 
     current_robot_state.joint_positions = plan.joint_trajectory.points[-1].positions
     plan = yumi.plan_path_local([pose_ee_t],hand_id,current_robot_state)
@@ -101,7 +106,8 @@ def plan_pickplace(goal):
     else:
         return []
 
-
+    """"""
+    """ Go to the drop location """
     if hand_id == yumi.LEFT:
         pose_ee = [0.1, 0.4, 0.3, 0.0, -2.0, 0.0]
         current_robot_state.joint_positions = plan.joint_trajectory.points[-1].positions
@@ -121,11 +127,15 @@ def plan_pickplace(goal):
             plans.append(plan)
         else:
             return []
-
+    """"""
     return plans
 
 
 def planforaction_callback(req):
+
+    """
+    Function for receiving service callback
+    """
 
     if req.action == 0:
         return {'trajectories':plan_pickplace(req.location)}
@@ -138,12 +148,12 @@ def planforaction_callback(req):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--planning_frame",type=str, default="/world",
+    parser.add_argument("--planning_frame",type=str, default="/yumi_pedestal",
         help='Moveit planning frame')
 
     args = parser.parse_args(rospy.myargv()[1:])
 
-    rospy.init_node('yumi_moveit_planning')
+    rospy.init_node('moveit_yumi_planning')
 
     try:
         yumi.init_Moveit(args.planning_frame)
@@ -151,5 +161,5 @@ if __name__ == '__main__':
         rospy.logwarn("Moveit cannot be initialized!! %s",str(ex))
         rospy.signal_shutdown("Moveit cannot be initialized!!")
 
-    s = rospy.Service('yumi_plan_action', PlanforAction, planforaction_callback)
+    s = rospy.Service('moveit_yumi_plan_action', PlanforAction, planforaction_callback)
     rospy.spin()

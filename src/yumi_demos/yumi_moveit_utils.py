@@ -80,25 +80,26 @@ def init_Moveit(planning_frame="/world"):
     # scene.add_box("part", p, (0.07, 0.01, 0.2))
 
     group_l = moveit_commander.MoveGroupCommander("left_arm")
-    group_l.set_planner_id("ESTkConfigDefault")
+    #group_l.set_planner_id("ESTkConfigDefault") 
+    group_l.set_planner_id("RRTConnectkConfigDefault")
     group_l.allow_replanning(False)
     group_l.set_goal_position_tolerance(0.0005)
     group_l.set_goal_orientation_tolerance(0.005)
 
     group_r = moveit_commander.MoveGroupCommander("right_arm")
-    group_r.set_planner_id("ESTkConfigDefault")
+    group_r.set_planner_id("RRTConnectkConfigDefault")
     group_r.allow_replanning(False)
     group_r.set_goal_position_tolerance(0.0005)
     group_r.set_goal_orientation_tolerance(0.005)
 
     group_both = moveit_commander.MoveGroupCommander("both_arms")
-    group_both.set_planner_id("ESTkConfigDefault")
+    group_both.set_planner_id("RRTConnectkConfigDefault")
     group_both.allow_replanning(False)
     group_both.set_goal_position_tolerance(0.0005)
     group_both.set_goal_orientation_tolerance(0.005)
 
     display_trajectory_publisher = rospy.Publisher('/move_group/display_planned_path', 	moveit_msgs.msg.DisplayTrajectory, queue_size=5)
-    rospy.sleep(3)
+    rospy.sleep(1)
     print("####################################     Finished Initialization     ####################################")
 
     #sys.stdout.write('\nYuMi MoveIt! demo initialized!\n\n\n')
@@ -503,7 +504,7 @@ def plan_path_local(points, arm, current_joint_state = None, planning_tries = 10
     fraction = 0.0
 
     while fraction < 1.0 and attempts < planning_tries:
-        (plan, fraction) = cur_arm.compute_cartesian_path(waypoints, 0.01, 0.0, True)
+        (plan, fraction) = cur_arm.compute_cartesian_path(waypoints, 0.005, 0.0, True)
         attempts += 1
         rospy.loginfo('attempts: ' + str(attempts) + ', fraction: ' + str(fraction))
 
@@ -609,6 +610,7 @@ def reset_arm(arm):
 
     safeJointPositionL =[-0.4478764533996582, -1.2682621479034424, 1.9585838317871094, 0.4285459518432617, 0.985352098941803, -0.024183640256524086, -0.5602127313613892]
     safeJointPositionR = [0.5301980376243591, -1.8081225156784058, -1.3030146360397339, 0.3174477219581604, -2.0786147117614746, 0.8679736256599426, 3.358731985092163]
+    #safeJointPositionL = [-0.5301980376243591, -1.8081225156784058, 1.3030146360397339, 0.3174477219581604,  2.0786147117614746, 0.8679736256599426, -3.358731985092163]
     #safeJointPositionL = [-1.0363517999649048, -0.6142887473106384, 2.595912456512451, 0.2907666862010956, -1.4505174160003662, 0.3214145600795746, -0.5671616792678833]
     #safeJointPositionL =[-0.25472718477249146, -1.5131276845932007, 0.5196816325187683, -4.367737293243408, 0.3309118151664734, 3.188214063644409, 1.7447172403335571]
     global group_l

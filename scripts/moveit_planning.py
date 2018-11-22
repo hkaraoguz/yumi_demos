@@ -66,8 +66,8 @@ def plan_pickplace(goal):
         hand_id = yumi.RIGHT
         move_group = yumi.group_r
 
-    if goal.position.z < 0.3:
-        goal.position.z = 0.3
+    if goal.position.z < 1.2:
+        goal.position.z = 1.2
 
     """ Move the arm on top of the object """
     pose_ee_t = [goal.position.x, goal.position.y, goal.position.z, 0.0,3.14, 0.0]
@@ -81,7 +81,7 @@ def plan_pickplace(goal):
     """"""
 
     """ Move the arm down """
-    pose_ee_t[2] = 0.2
+    pose_ee_t[2] = 1.11
     pose_ee_t[5] = goal.orientation.z#-3.14159
 
     ## Get the robot state when the arm reaches to the previous waypoint
@@ -96,7 +96,7 @@ def plan_pickplace(goal):
     """"""
 
     ''' Go up again '''
-    pose_ee_t[2] = 0.3
+    pose_ee_t[2] = 1.2
 
     current_robot_state.joint_positions = plan.joint_trajectory.points[-1].positions
     plan = yumi.plan_path_local([pose_ee_t],hand_id,current_robot_state)
@@ -109,7 +109,7 @@ def plan_pickplace(goal):
     """"""
     """ Go to the drop location """
     if hand_id == yumi.LEFT:
-        pose_ee = [0.1, 0.4, 0.3, 0.0, -2.0, 0.0]
+        pose_ee = [0.3, 0.3, 1.2, 0.0, 3.14, 0.0]
         current_robot_state.joint_positions = plan.joint_trajectory.points[-1].positions
         plan = yumi.plan_path_local([pose_ee],hand_id,current_robot_state)
 
@@ -119,7 +119,7 @@ def plan_pickplace(goal):
             return []
 
     else:
-        pose_ee = [0.1, -0.4, 0.3, 0.0, -2.0, 0.0]
+        pose_ee = [0.3, -0.3, 1.2, 0.0, 3.14, 0.0]
         current_robot_state.joint_positions = plan.joint_trajectory.points[-1].positions
         plan = yumi.plan_path_local([pose_ee],hand_id,current_robot_state)
 

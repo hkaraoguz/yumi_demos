@@ -61,26 +61,14 @@ def init_Moveit(planning_frame="/world"):
     scene.remove_world_object("table")
     scene.remove_world_object("part")
 
-    # publish a demo scene
     p = PoseStamped()
     p.header.frame_id = robot.get_planning_frame()
     if(robot.get_planning_frame() != planning_frame):
         raise AssertionError("Planning frames do not match!!", robot.get_planning_frame(),planning_frame)
 
-    # add a table
-    # p.pose.position.x = 0.625
-    # p.pose.position.y = 0.0
-    # p.pose.position.z = table_height
-    # scene.add_box("table", p, (1, 2, 0.1))
-
-    # add an object to be grasped
-    # p.pose.position.x = 0.205
-    # p.pose.position.y = -0.12
-    # p.pose.position.z = 0.7
-    # scene.add_box("part", p, (0.07, 0.01, 0.2))
 
     group_l = moveit_commander.MoveGroupCommander("left_arm")
-    #group_l.set_planner_id("ESTkConfigDefault") 
+    #group_l.set_planner_id("ESTkConfigDefault")
     group_l.set_planner_id("RRTConnectkConfigDefault")
     group_l.allow_replanning(False)
     group_l.set_goal_position_tolerance(0.0005)
@@ -632,9 +620,9 @@ def reset_arm(arm):
     elif (arm == BOTH):
         group_both.set_joint_value_target(safeJointPositionL + safeJointPositionR)
         group_both.go(wait=True)
-        gripper_effort(LEFT, -5.0)
+        gripper_effort(LEFT, -10.0)
         gripper_effort(LEFT, 0.0)
-        gripper_effort(RIGHT, -5.0)
+        gripper_effort(RIGHT, -10.0)
         gripper_effort(RIGHT, 0.0)
 
     rospy.sleep(1)

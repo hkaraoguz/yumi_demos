@@ -43,38 +43,15 @@ def run(x,y,z,r,p,yaw,planning_frame="/world"):
     if y <= 0.0:
         arm = yumi.RIGHT
 
-    yumi.open_grippers(yumi.LEFT)
-    yumi.open_grippers(yumi.RIGHT)
     yumi.move_global_planning(arm, pose_ee_r)
     rospy.sleep(2.0)
-    #pose_ee_r[2] = 0.2
-    yumi.move_global_planning(arm, pose_ee_r)
-    rospy.sleep(2.0)
-    #pose_ee_r[2] = 0.25
-    yumi.move_global_planning(arm, pose_ee_r)
-    rospy.sleep(2.0)
-    '''
-    pose_ee_l = [0.3, 0.3, 0.25, 0.0, 3.14, 0.0]
 
-    yumi.move_global_planning(yumi.LEFT, pose_ee_l)
-    rospy.sleep(2.0)
-    pose_ee_l[2] = 0.2
-    yumi.move_global_planning(yumi.LEFT, pose_ee_l)
-    rospy.sleep(2.0)
-    pose_ee_l[2] = 0.25
-    yumi.move_global_planning(yumi.LEFT, pose_ee_l)
-    rospy.sleep(2.0)
-    '''
-    # Reset YuMi joints to "home" position
-    #yumi.reset_pose()
 
 
 
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("planning_frame",type=str, default="/yumi_pedestal",
-        help='Moveit planning frame')
 
     parser.add_argument("x",type=float, default=0.3,
         help='x coordinate')
@@ -85,13 +62,16 @@ if __name__ == '__main__':
     parser.add_argument("z",type=float, default=0.3,
         help='z coordinate')
 
-    parser.add_argument("r",type=float, default=0.0,
+    parser.add_argument("-planning_frame",type=str, default="/world",
+        help='Moveit planning frame')
+
+    parser.add_argument("-roll",type=float, default=0.0,
         help='roll angle')
 
-    parser.add_argument("p",type=float, default=3.14,
+    parser.add_argument("-pitch",type=float, default=3.14,
         help='pitch angle')
 
-    parser.add_argument("yaw",type=float, default=0.0,
+    parser.add_argument("-yaw",type=float, default=0.0,
         help='yaw angle')
 
     args = parser.parse_args(rospy.myargv()[1:])
@@ -100,7 +80,7 @@ if __name__ == '__main__':
     rospy.init_node('yumi_moveit_demo_goto_pose')
 
     try:
-        run(args.x,args.y,args.z,args.r,args.p,args.yaw,args.planning_frame)
+        run(args.x,args.y,args.z,args.roll,args.pitch,args.yaw,args.planning_frame)
 
     	print "####################################     Program finished     ####################################"
     except rospy.ROSInterruptException:

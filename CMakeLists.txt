@@ -12,16 +12,15 @@ catkin_python_setup()
 
 
 ## Generate services in the 'srv' folder
- add_service_files(
-  FILES
-  PlanforAction.srv
+# add_service_files(
+#  FILES
 #   Service2.srv
-)
+#)
 
-generate_messages(
-  DEPENDENCIES
-  moveit_msgs   geometry_msgs   std_msgs
-)
+#generate_messages(
+#  DEPENDENCIES
+#  moveit_msgs   geometry_msgs   std_msgs
+#)
 
 # Declare catkin package
 catkin_package(

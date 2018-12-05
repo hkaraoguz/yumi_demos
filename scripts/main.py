@@ -69,7 +69,7 @@ def run(planning_frame="/world"):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--planning_frame",type=str, default="/yumi_pedestal",
+    parser.add_argument("--planning_frame",type=str, default="/world",
         help='Moveit planning frame')
 
     args = parser.parse_args(rospy.myargv()[1:])

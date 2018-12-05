@@ -1,5 +1,0 @@
-geometry_msgs/Pose location  # Goal location
-
-int8 action # The desired action, currently 2 actions are supported 0:pick_and_place, 1:point
------
-moveit_msgs/RobotTrajectory[] trajectories # The list of trajectories for completing the action

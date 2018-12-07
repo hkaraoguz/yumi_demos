@@ -126,8 +126,30 @@ def move_local_planning(arm, pose_ee):
 
     return True
 
+def relax_grippers(arm):
+    """Relaxes the grippers.
+
+    Sets the effort of the gripper to 0.
+
+    :param arm: The side to be closed (moveit_utils LEFT or RIGHT)
+    :type arm: int
+    :returns: Nothing
+    :rtype: None
+    """
+    gripper_effort(arm, 0.0)
 
 
+def relax_all_grippers():
+    """Relaxes all the grippers.
+
+
+    :param arm: The side to be closed (moveit_utils LEFT or RIGHT)
+    :type arm: int
+    :returns: Nothing
+    :rtype: None
+    """
+    gripper_effort(LEFT, 0.0)
+    gripper_effort(RIGHT, 0.0)
 
 
 def close_grippers(arm):
@@ -153,6 +175,7 @@ def open_grippers(arm):
     :rtype: None
     """
     gripper_effort(arm, -10.0)
+    rospy.sleep(1.0)
     gripper_effort(arm, 0.0)
 
 

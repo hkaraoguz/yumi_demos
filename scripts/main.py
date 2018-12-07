@@ -34,7 +34,6 @@ def run(planning_frame="/world"):
     # Drive YuMi end effectors to a desired position (pose_ee_x), and perform a grasping task with a given effort (grip_effort)
     # Gripper effort: opening if negative, closing if positive, static if zero
 
-    # Default pose
 
     # Right arm Target pose
     pose_ee_r = [0.3, -0.3, 0.25, 0.0, 3.14, 0.0]
